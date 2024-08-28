@@ -109,31 +109,33 @@ public class Utils {
     }
     try {
       Method mMethod = getMethod(object, name, parameters.length);
-      Class<?>[] mRequestedMethodParameters = mMethod.getParameterTypes();
+      if(mMethod != null) {
+        Class<?>[] mRequestedMethodParameters = mMethod.getParameterTypes();
 
-      for (int i = 0; i < mRequestedMethodParameters.length; i++) {
-        final String value = String.valueOf(parameters[i]);
+        for (int i = 0; i < mRequestedMethodParameters.length; i++) {
+          final String value = String.valueOf(parameters[i]);
 
-        switch (mRequestedMethodParameters[i].getName()) {
-          case "int":
-            parameters[i] = Integer.parseInt(value);
-            break;
-          case "float":
-            parameters[i] = Float.parseFloat(value);
-            break;
-          case "double":
-            parameters[i] = Double.parseDouble(value);
-            break;
-          case "java.lang.String":
-            parameters[i] = value;
-            break;
-          case "boolean":
-            parameters[i] = Boolean.parseBoolean(value);
-            break;
+          switch (mRequestedMethodParameters[i].getName()) {
+            case "int":
+              parameters[i] = Integer.parseInt(value);
+              break;
+            case "float":
+              parameters[i] = Float.parseFloat(value);
+              break;
+            case "double":
+              parameters[i] = Double.parseDouble(value);
+              break;
+            case "java.lang.String":
+              parameters[i] = value;
+              break;
+            case "boolean":
+              parameters[i] = Boolean.parseBoolean(value);
+              break;
+          }
         }
+        Object mInvokedMethod = mMethod.invoke(object, parameters);
+        return mInvokedMethod;
       }
-      Object mInvokedMethod = mMethod.invoke(object, parameters);
-      return mInvokedMethod;
     } catch (InvocationTargetException e) {
       String errorMessage = e.getCause().getMessage() == null ? e.getCause().toString() : e.getCause().getMessage();
       throw new YailRuntimeError("Got an error inside the invoke: " + errorMessage, TAG);
@@ -142,6 +144,7 @@ public class Utils {
       String errorMessage = e.getMessage() == null ? e.toString() : e.getMessage();
       throw new YailRuntimeError("Couldn't invoke: " + errorMessage, TAG);
     }
+    return null;
   }
 
   /*
